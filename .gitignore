@@ -1,0 +1,7 @@
+*.*~
+NeoPlayer
+*.exe
+*.dll
+*.so.*
+*.so
+logfile.txt

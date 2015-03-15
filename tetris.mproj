@@ -1,0 +1,11 @@
+<Maratis version="3.0">
+
+<Game vertex_shader="../../../../" fragment_shader="../../../../" resolution="1.000000"/>
+<Project>
+
+	<renderer name="StandardRenderer" />
+	<start file="levels/menu.level" />
+
+</Project>
+
+</Maratis>
