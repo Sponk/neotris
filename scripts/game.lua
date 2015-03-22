@@ -10,12 +10,26 @@ dofile("iblock.lua")
 dofile("jblock.lua")
 
 dofile("preview.lua")
+dofile("highscore.lua")
 
 hideCursor()
 
 math.randomseed(os.time())
 local blockTypes = {LBlock, TBlock, ZBlock, SBlock, OBlock, IBlock, JBlock}
 print("There are " .. #blockTypes .. " block types.")
+
+local highscoreList = HighscoreList()
+local highscoreDirectory = os.getenv("HOME")
+local highscoreFilename = ""
+if highscoreDirectory == nil then
+   highscoreDirectory = os.getenv("APPDATA")
+   highscoreDirectory = highscoreDirectory .. "\\Neotris\\"
+   highscoreFilename = highscoreDirectory  .. "score.hsc"
+else
+   highscoreDirectory = highscoreDirectory .. "/.neotris/"
+   highscoreFilename = highscoreDirectory .. "score.hsc"
+end
+highscoreList:load(highscoreFilename)
 
 local scoreList = {[0]=0, 10, 100, 200, 400, 800}
 local levelupLines = 10
@@ -131,8 +145,15 @@ local levelupSound = loadSound("sounds/Level Up!/chipquest.wav")
 
 setSoundGain(music, 0.5)
 
-local player = {score = 0, lines = 0, level = 0}
+local player = {score = 0, lines = 0, level = 0, name = "Player"}
 local currentBlock = getNextBlock()
+
+-- Load player name
+-- FIXME: Should be done in the engine without files!
+local f = assert(io.open(highscoreDirectory .. "playername.txt", "r"))
+player.name = f:read("*all")
+f:close()
+f = nil
 
 function onLevelup()
    if player.level < maxLevel then
@@ -148,6 +169,9 @@ function onGameOver()
 
    mainCanvas:addWidget(gameOverLabel)
    gameOverLabel:setVisible(true)
+
+   highscoreList:add(player.name, player.score)
+   highscoreList:save(highscoreFilename)
 end
 
 function onExit()
